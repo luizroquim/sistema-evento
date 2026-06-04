@@ -1,4 +1,4 @@
-import React, { forwardRef, ButtonHTMLAttributes } from 'react';
+import { forwardRef, ButtonHTMLAttributes } from 'react';
 import * as S from './styles';
 
 
@@ -19,7 +19,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         $variant={variant} 
         {...rest}
       >
-        {isLoading ? 'Enviando arquivos...' : children}
+        {isLoading ? 'Enviando...' : children}
       </S.StyledButton>
     );
   }
