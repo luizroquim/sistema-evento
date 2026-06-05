@@ -6,12 +6,16 @@ interface TemplateData {
 }
 
 export function generateProtocolTemplate({ formData, protocolNumber }: TemplateData): string {
+  const now = new Date();
+  const formattedDate = now.toLocaleDateString('pt-BR');
+  const formattedTime = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
   return `==================================================
 COMPROVANTE DE RECEBIMENTO DE DOCUMENTAÇÃO
 ==================================================
 
 Protocolo: ${protocolNumber}
-Data de Envio: ${new Date().toLocaleDateString('pt-BR')}
+Data de Envio: ${formattedDate} às ${formattedTime}
 
 --------------------------------------------------
 DADOS DO CANDIDATO:
