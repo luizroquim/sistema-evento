@@ -21,4 +21,21 @@ export const registrationService = {
     if (error) throw new Error(error.message);
     return data.path;
   },
+
+  
+  async checkExistingCPF(cpf: string): Promise<boolean> {
+    const cleanCPF = cpf.replace(/\D/g, ""); 
+    const { data, error } = await supabase
+      .from("registrations")
+      .select("id")
+      .eq("document", cleanCPF);
+
+    if (error) {
+      console.error("Erro ao checar CPF no banco:", error);
+      return false; 
+    }
+
+    
+    return data && data.length > 0;
+  },
 };

@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { CheckCircle2, Download, ArrowLeft } from "lucide-react";
+import { CheckCircle2, Download, ArrowLeft, Lock } from "lucide-react";
 import { useTheme } from "styled-components";
 import { cpfMask, phoneMask } from "../../utils/masks";
 import { Input, Button, Checkbox, Modal, FileInput } from "../../components/UI";
@@ -208,9 +208,16 @@ export function Registration() {
           type="submit"
           variant="primary"
           isLoading={isSupabaseLoading}
-          disabled={isSupabaseLoading}
+          disabled={isSupabaseLoading || !!errors.document}
         >
-          Enviar
+          {errors.document?.type === "is-unique-cpf" ? (
+            <>
+              <Lock size={18} />
+              Inscrição Bloqueada
+            </>
+          ) : (
+            "Enviar"
+          )}
         </Button>
       </S.FormCard>
 

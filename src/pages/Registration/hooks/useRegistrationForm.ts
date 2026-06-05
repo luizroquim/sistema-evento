@@ -6,9 +6,10 @@ import { generateProtocolTemplate } from "../utils/generateProtocolTemplate";
 
 export function useRegistrationForm() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formDataTmp, setFormDataTmp] = useState<RegistrationFormData | null>(null);
+  const [formDataTmp, setFormDataTmp] = useState<RegistrationFormData | null>(
+    null,
+  );
 
-  // Estados locais limpos (o controle de sucesso real agora fica no index lendo o Supabase)
   const [protocolNumber, setProtocolNumber] = useState("");
 
   const CUSTOM_EPOCH = 1735689600000;
@@ -23,7 +24,7 @@ export function useRegistrationForm() {
     reset,
   } = useForm<RegistrationFormData>({
     resolver: yupResolver(registrationSchema),
-    mode: "onTouched",
+    mode: "onBlur",
   });
 
   const handlePreSubmit = useCallback((data: RegistrationFormData) => {
@@ -31,7 +32,6 @@ export function useRegistrationForm() {
     setIsModalOpen(true);
   }, []);
 
-  // Esta função agora serve estritamente para gerar o seu Snowflake ID único de 64 bits de forma síncrona e performática
   const generateSnowflakeId = useCallback(() => {
     let timestamp = Date.now();
     if (timestamp === lastTimestamp.current) {
@@ -50,41 +50,44 @@ export function useRegistrationForm() {
     const snowflakeId =
       (timePassed << 22n) |
       (BigInt(workerId) << 12n) |
-      (BigInt(sequence.current));
+      BigInt(sequence.current);
 
     const generatedProtocol = snowflakeId.toString();
     setProtocolNumber(generatedProtocol);
-    
+
     return generatedProtocol;
   }, [CUSTOM_EPOCH]);
 
-  // Função adaptada para aceitar o protocolo vindo de fora ou o do estado local
-  const handleDownloadProtocol = useCallback((externalProtocol?: string | null) => {
-    const activeProtocol = externalProtocol || protocolNumber;
-    if (!formDataTmp || !activeProtocol) return;
+  const handleDownloadProtocol = useCallback(
+    (externalProtocol?: string | null) => {
+      const activeProtocol = externalProtocol || protocolNumber;
+      if (!formDataTmp || !activeProtocol) return;
 
-    const fileContent = generateProtocolTemplate({
-      formData: formDataTmp,
-      protocolNumber: activeProtocol,
-    });
+      const fileContent = generateProtocolTemplate({
+        formData: formDataTmp,
+        protocolNumber: activeProtocol,
+      });
 
-    const blob = new Blob([fileContent], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
+      const blob = new Blob([fileContent], {
+        type: "text/plain;charset=utf-8",
+      });
+      const url = URL.createObjectURL(blob);
 
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `comprovante-${activeProtocol}.txt`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  }, [formDataTmp, protocolNumber]);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `comprovante-${activeProtocol}.txt`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    },
+    [formDataTmp, protocolNumber],
+  );
 
   const handleCloseModal = useCallback(() => {
     setIsModalOpen(false);
   }, []);
 
-  // Limpa o formulário de forma performática após a confirmação total
   const handleResetFormState = useCallback(() => {
     reset();
     setProtocolNumber("");
@@ -99,9 +102,9 @@ export function useRegistrationForm() {
     formDataTmp,
     protocolNumber,
     handlePreSubmit,
-    generateSnowflakeId, 
+    generateSnowflakeId,
     handleCloseModal,
     handleDownloadProtocol,
-    handleResetFormState, 
+    handleResetFormState,
   };
 }
