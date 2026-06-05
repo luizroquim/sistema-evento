@@ -6,10 +6,9 @@ import { generateProtocolTemplate } from "../utils/generateProtocolTemplate";
 
 export function useRegistrationForm() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formDataTmp, setFormDataTmp] = useState<RegistrationFormData | null>(null);
 
-  const [isSuccess, setIsSuccess] = useState(false);
+  // Estados locais limpos (o controle de sucesso real agora fica no index lendo o Supabase)
   const [protocolNumber, setProtocolNumber] = useState("");
 
   const CUSTOM_EPOCH = 1735689600000;
@@ -32,52 +31,41 @@ export function useRegistrationForm() {
     setIsModalOpen(true);
   }, []);
 
-  const handleFinalConfirm = useCallback(async () => {
-    setIsModalOpen(false);
-    setIsSubmitting(true);
-
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      let timestamp = Date.now();
-      if (timestamp === lastTimestamp.current) {
-        sequence.current = (sequence.current + 1) & 4095;
-        if (sequence.current === 0) {
-          while (timestamp <= lastTimestamp.current) {
-            timestamp = Date.now();
-          }
+  // Esta função agora serve estritamente para gerar o seu Snowflake ID único de 64 bits de forma síncrona e performática
+  const generateSnowflakeId = useCallback(() => {
+    let timestamp = Date.now();
+    if (timestamp === lastTimestamp.current) {
+      sequence.current = (sequence.current + 1) & 4095;
+      if (sequence.current === 0) {
+        while (timestamp <= lastTimestamp.current) {
+          timestamp = Date.now();
         }
-      } else {
-        sequence.current = 0;
       }
-      lastTimestamp.current = timestamp;
-
-      const timePassed = BigInt(timestamp - CUSTOM_EPOCH);
-      const snowflakeId =
-        (timePassed << 22n) |
-        (BigInt(workerId) << 12n) |
-        BigInt(sequence.current);
-
-      const generatedProtocol = snowflakeId.toString();
-      setProtocolNumber(generatedProtocol);
-      setIsSuccess(true);
-
-      setTimeout(() => {
-        reset();
-      }, 0);
-    } catch (error) {
-      console.error("Erro ao enviar inscrição:", error);
-    } finally {
-      setIsSubmitting(false);
+    } else {
+      sequence.current = 0;
     }
-  }, [reset, formDataTmp, CUSTOM_EPOCH]);
+    lastTimestamp.current = timestamp;
 
-  const handleDownloadProtocol = useCallback(() => {
-    if (!formDataTmp || !protocolNumber) return;
+    const timePassed = BigInt(timestamp - CUSTOM_EPOCH);
+    const snowflakeId =
+      (timePassed << 22n) |
+      (BigInt(workerId) << 12n) |
+      (BigInt(sequence.current));
+
+    const generatedProtocol = snowflakeId.toString();
+    setProtocolNumber(generatedProtocol);
+    
+    return generatedProtocol;
+  }, [CUSTOM_EPOCH]);
+
+  // Função adaptada para aceitar o protocolo vindo de fora ou o do estado local
+  const handleDownloadProtocol = useCallback((externalProtocol?: string | null) => {
+    const activeProtocol = externalProtocol || protocolNumber;
+    if (!formDataTmp || !activeProtocol) return;
 
     const fileContent = generateProtocolTemplate({
       formData: formDataTmp,
-      protocolNumber,
+      protocolNumber: activeProtocol,
     });
 
     const blob = new Blob([fileContent], { type: "text/plain;charset=utf-8" });
@@ -85,7 +73,7 @@ export function useRegistrationForm() {
 
     const link = document.createElement("a");
     link.href = url;
-    link.download = `comprovante-${protocolNumber}.txt`;
+    link.download = `comprovante-${activeProtocol}.txt`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -96,25 +84,24 @@ export function useRegistrationForm() {
     setIsModalOpen(false);
   }, []);
 
-  const handleResetSuccess = useCallback(() => {
-    setIsSuccess(false);
+  // Limpa o formulário de forma performática após a confirmação total
+  const handleResetFormState = useCallback(() => {
+    reset();
     setProtocolNumber("");
     setFormDataTmp(null);
-  }, []);
+  }, [reset]);
 
   return {
     register,
     handleSubmit,
     errors,
     isModalOpen,
-    isSubmitting,
     formDataTmp,
-    isSuccess,
     protocolNumber,
     handlePreSubmit,
-    handleFinalConfirm,
+    generateSnowflakeId, 
     handleCloseModal,
     handleDownloadProtocol,
-    handleResetSuccess,
+    handleResetFormState, 
   };
 }

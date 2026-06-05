@@ -1,14 +1,15 @@
 import { useEffect } from "react";
-import { X } from "lucide-react"; // Ícone de "X" para fechar
-import { Button } from "../Button"; // Nosso botão customizado
-import * as S from "./styles"; // Nossos estilos que faremos em seguida
+import { X } from "lucide-react";
+import { Button } from "../Button";
+import * as S from "./styles";
 
 interface ModalProps {
-  isOpen: boolean; // some ou aparece
-  onClose: () => void; // Fechar modal
-  onConfirm: () => void; // Confirmação do envio
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
   title: string;
   children: React.ReactNode;
+  isLoading?: boolean;
 }
 
 export function Modal({
@@ -17,6 +18,7 @@ export function Modal({
   onConfirm,
   title,
   children,
+  isLoading = false,
 }: ModalProps) {
   useEffect(() => {
     if (isOpen) {
@@ -37,7 +39,12 @@ export function Modal({
       <S.ModalContainer onClick={(e) => e.stopPropagation()}>
         <S.Header>
           <h3>{title}</h3>
-          <button type="button" onClick={onClose} aria-label="Fechar modal">
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={isLoading}
+            aria-label="Fechar modal"
+          >
             <X size={20} />
           </button>
         </S.Header>
@@ -45,10 +52,21 @@ export function Modal({
         <S.Content>{children}</S.Content>
 
         <S.Footer>
-          <Button variant="ghost" type="button" onClick={onClose}>
+          <Button
+            variant="ghost"
+            type="button"
+            onClick={onClose}
+            disabled={isLoading}
+          >
             Cancelar
           </Button>
-          <Button variant="primary" type="button" onClick={onConfirm}>
+          <Button
+            variant="primary"
+            type="button"
+            onClick={onConfirm}
+            isLoading={isLoading}
+            disabled={isLoading}
+          >
             Confirmar e Enviar
           </Button>
         </S.Footer>

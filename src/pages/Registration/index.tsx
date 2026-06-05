@@ -1,64 +1,106 @@
+import { useRef } from "react";
 import { CheckCircle2, Download, ArrowLeft } from "lucide-react";
 import { useTheme } from "styled-components";
 import { cpfMask, phoneMask } from "../../utils/masks";
 import { Input, Button, Checkbox, Modal, FileInput } from "../../components/UI";
 import { useRegistrationForm } from "./hooks/useRegistrationForm";
+import { useSubmitRegistration } from "./hooks/useSubmitRegistration";
 import * as S from "./styles";
 
 export function Registration() {
   const theme = useTheme();
-  
+  const isSubmittingRef = useRef(false);
+
+  const {
+    registerCandidate,
+    isLoading: isSupabaseLoading,
+    error: supabaseError,
+    successProtocol,
+    resetSubmission,
+  } = useSubmitRegistration();
+
   const {
     register,
     handleSubmit,
     errors,
     isModalOpen,
-    isSubmitting,
     formDataTmp,
-    isSuccess,
-    protocolNumber,
     handlePreSubmit,
-    handleFinalConfirm,
+    generateSnowflakeId,
     handleCloseModal,
     handleDownloadProtocol,
-    handleResetSuccess,
+    handleResetFormState,
   } = useRegistrationForm();
 
-  if (isSuccess) {
+  const isRealSuccess = !!successProtocol;
+
+  const handleConfirmRegistration = async () => {
+    if (!formDataTmp) return;
+    if (isSubmittingRef.current) return;
+
+    isSubmittingRef.current = true;
+
+    try {
+      const realProtocolId = generateSnowflakeId();
+
+      const fileList = formDataTmp.documentFile as FileList;
+      const file = fileList && fileList.length > 0 ? fileList[0] : null;
+
+      const candidateData = {
+        full_name: formDataTmp.fullName,
+        document: formDataTmp.document.replace(/\D/g, ""),
+        email: formDataTmp.email,
+        phone: formDataTmp.phone.replace(/\D/g, ""),
+        payment_number: formDataTmp.paymentNumber,
+      };
+
+      await registerCandidate(candidateData, file, realProtocolId);
+      handleCloseModal();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      isSubmittingRef.current = false;
+    }
+  };
+
+  if (isRealSuccess) {
     return (
       <S.PageContainer>
         <S.FormCard as="div">
           <S.SuccessContainer>
             <CheckCircle2 size={56} color={theme.colors.success} />
-            
+
             <S.SuccessTitle>Inscrição Concluída!</S.SuccessTitle>
-            
+
             <S.SuccessSubtitle>
-              Os seus dados foram enviados. Um e-mail de confirmação foi encaminhado para: <br />
+              Os seus dados foram enviados. Um e-mail de confirmação foi
+              encaminhado para: <br />
               <span>{formDataTmp?.email}</span>
             </S.SuccessSubtitle>
 
             <S.ProtocolBox>
               <S.ProtocolLabel>Número do Protocolo</S.ProtocolLabel>
-              <S.ProtocolValue>{protocolNumber}</S.ProtocolValue>
+              <S.ProtocolValue>{successProtocol}</S.ProtocolValue>
             </S.ProtocolBox>
 
             <S.ActionGroup>
-              <Button 
-                type="button" 
-                variant="primary" 
-                onClick={handleDownloadProtocol}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+              <Button
+                type="button"
+                variant="primary"
+                onClick={() => handleDownloadProtocol(successProtocol)}
               >
                 <Download size={18} />
                 Baixar Comprovante (.txt)
               </Button>
 
-              <Button 
-                type="button" 
-                variant="secondary" 
-                onClick={handleResetSuccess}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => {
+                  handleResetFormState();
+                  resetSubmission();
+                  isSubmittingRef.current = false;
+                }}
               >
                 <ArrowLeft size={18} />
                 Voltar ao Início
@@ -79,6 +121,8 @@ export function Registration() {
             Preencha seus dados abaixo para iniciar o processo de inscrição.
           </S.FormSubtitle>
         </S.HeaderGroup>
+
+        {supabaseError && <S.ErrorAlert>{supabaseError}</S.ErrorAlert>}
 
         <Input
           id="paymentNumber"
@@ -160,7 +204,12 @@ export function Registration() {
           }
         />
 
-        <Button type="submit" variant="primary" isLoading={isSubmitting} style={{ width: '100%' }}>
+        <Button
+          type="submit"
+          variant="primary"
+          isLoading={isSupabaseLoading}
+          disabled={isSupabaseLoading}
+        >
           Enviar
         </Button>
       </S.FormCard>
@@ -169,13 +218,20 @@ export function Registration() {
         isOpen={isModalOpen}
         title="Confirmar Dados da Inscrição"
         onClose={handleCloseModal}
-        onConfirm={handleFinalConfirm}
+        onConfirm={handleConfirmRegistration}
+        isLoading={isSupabaseLoading}
       >
         <S.ModalText>
           Olá, <strong>{formDataTmp?.fullName}</strong>!
         </S.ModalText>
 
         <S.ModalSubText>Confirma o envio dos seus dados?</S.ModalSubText>
+
+        {isSupabaseLoading && (
+          <S.LoadingFeedback>
+            Processando arquivos e salvando dados...
+          </S.LoadingFeedback>
+        )}
       </Modal>
     </S.PageContainer>
   );
