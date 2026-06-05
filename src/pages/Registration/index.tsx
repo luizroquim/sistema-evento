@@ -7,7 +7,7 @@ import * as S from "./styles";
 
 export function Registration() {
   const theme = useTheme();
-  
+
   const {
     register,
     handleSubmit,
@@ -30,11 +30,12 @@ export function Registration() {
         <S.FormCard as="div">
           <S.SuccessContainer>
             <CheckCircle2 size={56} color={theme.colors.success} />
-            
+
             <S.SuccessTitle>Inscrição Concluída!</S.SuccessTitle>
-            
+
             <S.SuccessSubtitle>
-              Os seus dados foram enviados. Um e-mail de confirmação foi encaminhado para: <br />
+              Os seus dados foram enviados. Um e-mail de confirmação foi
+              encaminhado para: <br />
               <span>{formDataTmp?.email}</span>
             </S.SuccessSubtitle>
 
@@ -44,21 +45,31 @@ export function Registration() {
             </S.ProtocolBox>
 
             <S.ActionGroup>
-              <Button 
-                type="button" 
-                variant="primary" 
+              <Button
+                type="button"
+                variant="primary"
                 onClick={handleDownloadProtocol}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.5rem",
+                }}
               >
                 <Download size={18} />
                 Baixar Comprovante (.txt)
               </Button>
 
-              <Button 
-                type="button" 
-                variant="secondary" 
+              <Button
+                type="button"
+                variant="secondary"
                 onClick={handleResetSuccess}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.5rem",
+                }}
               >
                 <ArrowLeft size={18} />
                 Voltar ao Início
