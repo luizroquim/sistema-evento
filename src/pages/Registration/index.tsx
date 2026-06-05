@@ -1,9 +1,13 @@
+import { CheckCircle2, Download, ArrowLeft } from "lucide-react";
+import { useTheme } from "styled-components";
 import { cpfMask, phoneMask } from "../../utils/masks";
 import { Input, Button, Checkbox, Modal, FileInput } from "../../components/UI";
 import { useRegistrationForm } from "./hooks/useRegistrationForm";
 import * as S from "./styles";
 
 export function Registration() {
+  const theme = useTheme();
+  
   const {
     register,
     handleSubmit,
@@ -11,10 +15,60 @@ export function Registration() {
     isModalOpen,
     isSubmitting,
     formDataTmp,
+    isSuccess,
+    protocolNumber,
     handlePreSubmit,
     handleFinalConfirm,
     handleCloseModal,
+    handleDownloadProtocol,
+    handleResetSuccess,
   } = useRegistrationForm();
+
+  if (isSuccess) {
+    return (
+      <S.PageContainer>
+        <S.FormCard as="div">
+          <S.SuccessContainer>
+            <CheckCircle2 size={56} color={theme.colors.success} />
+            
+            <S.SuccessTitle>Inscrição Concluída!</S.SuccessTitle>
+            
+            <S.SuccessSubtitle>
+              Os seus dados foram enviados. Um e-mail de confirmação foi encaminhado para: <br />
+              <span>{formDataTmp?.email}</span>
+            </S.SuccessSubtitle>
+
+            <S.ProtocolBox>
+              <S.ProtocolLabel>Número do Protocolo</S.ProtocolLabel>
+              <S.ProtocolValue>{protocolNumber}</S.ProtocolValue>
+            </S.ProtocolBox>
+
+            <S.ActionGroup>
+              <Button 
+                type="button" 
+                variant="primary" 
+                onClick={handleDownloadProtocol}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+              >
+                <Download size={18} />
+                Baixar Comprovante (.txt)
+              </Button>
+
+              <Button 
+                type="button" 
+                variant="secondary" 
+                onClick={handleResetSuccess}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+              >
+                <ArrowLeft size={18} />
+                Voltar ao Início
+              </Button>
+            </S.ActionGroup>
+          </S.SuccessContainer>
+        </S.FormCard>
+      </S.PageContainer>
+    );
+  }
 
   return (
     <S.PageContainer>
