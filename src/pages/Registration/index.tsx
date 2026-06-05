@@ -1,10 +1,9 @@
-import { cpfMask, phoneMask } from '../../utils/masks';
-import { Input, Button, Checkbox, Modal } from '../../components/UI';
-import { useRegistrationForm } from './hooks/useRegistrationForm';
-import * as S from './styles';
+import { cpfMask, phoneMask } from "../../utils/masks";
+import { Input, Button, Checkbox, Modal, FileInput } from "../../components/UI";
+import { useRegistrationForm } from "./hooks/useRegistrationForm";
+import * as S from "./styles";
 
 export function Registration() {
-
   const {
     register,
     handleSubmit,
@@ -14,7 +13,7 @@ export function Registration() {
     formDataTmp,
     handlePreSubmit,
     handleFinalConfirm,
-    handleCloseModal
+    handleCloseModal,
   } = useRegistrationForm();
 
   return (
@@ -26,11 +25,19 @@ export function Registration() {
         </S.FormSubtitle>
 
         <Input
+          id="paymentNumber"
+          label="Número da Inscrição (Recebido no Pagamento)"
+          placeholder="Digite o código ou número do comprovante"
+          error={errors.paymentNumber?.message}
+          {...register("paymentNumber")}
+        />
+
+        <Input
           id="fullName"
           label="Nome Completo"
           placeholder="Digite seu nome completo"
           error={errors.fullName?.message}
-          {...register('fullName')}
+          {...register("fullName")}
         />
 
         <Input
@@ -39,8 +46,10 @@ export function Registration() {
           placeholder="000.000.000-00"
           maxLength={14}
           error={errors.document?.message}
-          {...register('document', {
-            onChange: (e) => { e.target.value = cpfMask(e.target.value); }
+          {...register("document", {
+            onChange: (e) => {
+              e.target.value = cpfMask(e.target.value);
+            },
           })}
         />
 
@@ -50,7 +59,7 @@ export function Registration() {
           type="email"
           placeholder="seu.email@exemplo.com"
           error={errors.email?.message}
-          {...register('email')}
+          {...register("email")}
         />
 
         <Input
@@ -59,27 +68,42 @@ export function Registration() {
           placeholder="(35) 99999-9999"
           maxLength={15}
           error={errors.phone?.message}
-          {...register('phone', {
-            onChange: (e) => { e.target.value = phoneMask(e.target.value); }
+          {...register("phone", {
+            onChange: (e) => {
+              e.target.value = phoneMask(e.target.value);
+            },
           })}
+        />
+
+        <FileInput
+          id="documentFile"
+          label="Documento (PDF até 5mb)"
+          accept=".pdf,.png,.jpg,.jpeg"
+          error={errors.documentFile?.message}
+          {...register("documentFile")}
         />
 
         <Checkbox
           id="termsAccepted"
           error={errors.termsAccepted?.message}
-          {...register('termsAccepted')}
+          {...register("termsAccepted")}
           label={
             <>
-              Li e estou de acordo com o{' '}
-              <a href="/regulamento.pdf" target="_blank" rel="noopener noreferrer">
+              Li e estou de acordo com o{" "}
+              <a
+                href="/regulamento.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Regulamento Oficial do Concurso
-              </a>.
+              </a>
+              .
             </>
           }
         />
 
         <Button type="submit" variant="primary" isLoading={isSubmitting}>
-          Avançar para o Pagamento
+          Enviar
         </Button>
       </S.FormCard>
 
@@ -89,12 +113,11 @@ export function Registration() {
         onClose={handleCloseModal}
         onConfirm={handleFinalConfirm}
       >
-        <p style={{ lineHeight: 1.5 }}>
+        <S.ModalText>
           Olá, <strong>{formDataTmp?.fullName}</strong>!
-        </p>
-        <p style={{ marginTop: '0.5rem', color: '#555', lineHeight: 1.5 }}>
-          Confirma que os seus dados de contato e o CPF <strong>{formDataTmp?.document}</strong> estão corretos? Após a confirmação, você será direcionado para a etapa final.
-        </p>
+        </S.ModalText>
+
+        <S.ModalSubText>Confirma o envio dos seus dados?</S.ModalSubText>
       </Modal>
     </S.PageContainer>
   );

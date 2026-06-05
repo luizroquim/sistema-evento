@@ -36,3 +36,20 @@ export const FormSubtitle = styled.p`
   margin-bottom: 1rem;
   line-height: 1.4;
 `;
+
+export const ModalText = styled.p`
+  font-size: 1rem;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.foreground};
+  
+  strong {
+    font-weight: 700;
+  }
+`;
+
+export const ModalSubText = styled.p`
+  font-size: 0.925rem;
+  line-height: 1.5;
+  margin-top: 0.5rem;
+  color: ${({ theme }) => theme.colors.placeholder};
+`;
