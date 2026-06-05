@@ -7,7 +7,7 @@ import * as S from "./styles";
 
 export function Registration() {
   const theme = useTheme();
-
+  
   const {
     register,
     handleSubmit,
@@ -30,12 +30,11 @@ export function Registration() {
         <S.FormCard as="div">
           <S.SuccessContainer>
             <CheckCircle2 size={56} color={theme.colors.success} />
-
+            
             <S.SuccessTitle>Inscrição Concluída!</S.SuccessTitle>
-
+            
             <S.SuccessSubtitle>
-              Os seus dados foram enviados. Um e-mail de confirmação foi
-              encaminhado para: <br />
+              Os seus dados foram enviados. Um e-mail de confirmação foi encaminhado para: <br />
               <span>{formDataTmp?.email}</span>
             </S.SuccessSubtitle>
 
@@ -45,31 +44,21 @@ export function Registration() {
             </S.ProtocolBox>
 
             <S.ActionGroup>
-              <Button
-                type="button"
-                variant="primary"
+              <Button 
+                type="button" 
+                variant="primary" 
                 onClick={handleDownloadProtocol}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "0.5rem",
-                }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
               >
                 <Download size={18} />
                 Baixar Comprovante (.txt)
               </Button>
 
-              <Button
-                type="button"
-                variant="secondary"
+              <Button 
+                type="button" 
+                variant="secondary" 
                 onClick={handleResetSuccess}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "0.5rem",
-                }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
               >
                 <ArrowLeft size={18} />
                 Voltar ao Início
@@ -84,10 +73,12 @@ export function Registration() {
   return (
     <S.PageContainer>
       <S.FormCard onSubmit={handleSubmit(handlePreSubmit)}>
-        <S.FormTitle>Inscrição para o Concurso</S.FormTitle>
-        <S.FormSubtitle>
-          Preencha seus dados abaixo para iniciar o processo de inscrição.
-        </S.FormSubtitle>
+        <S.HeaderGroup>
+          <S.FormTitle>Inscrição para o Concurso</S.FormTitle>
+          <S.FormSubtitle>
+            Preencha seus dados abaixo para iniciar o processo de inscrição.
+          </S.FormSubtitle>
+        </S.HeaderGroup>
 
         <Input
           id="paymentNumber"
@@ -105,18 +96,33 @@ export function Registration() {
           {...register("fullName")}
         />
 
-        <Input
-          id="document"
-          label="CPF"
-          placeholder="000.000.000-00"
-          maxLength={14}
-          error={errors.document?.message}
-          {...register("document", {
-            onChange: (e) => {
-              e.target.value = cpfMask(e.target.value);
-            },
-          })}
-        />
+        <S.RowGroup>
+          <Input
+            id="document"
+            label="CPF"
+            placeholder="000.000.000-00"
+            maxLength={14}
+            error={errors.document?.message}
+            {...register("document", {
+              onChange: (e) => {
+                e.target.value = cpfMask(e.target.value);
+              },
+            })}
+          />
+
+          <Input
+            id="phone"
+            label="Telefone Celular"
+            placeholder="(35) 99999-9999"
+            maxLength={15}
+            error={errors.phone?.message}
+            {...register("phone", {
+              onChange: (e) => {
+                e.target.value = phoneMask(e.target.value);
+              },
+            })}
+          />
+        </S.RowGroup>
 
         <Input
           id="email"
@@ -125,19 +131,6 @@ export function Registration() {
           placeholder="seu.email@exemplo.com"
           error={errors.email?.message}
           {...register("email")}
-        />
-
-        <Input
-          id="phone"
-          label="Telefone Celular"
-          placeholder="(35) 99999-9999"
-          maxLength={15}
-          error={errors.phone?.message}
-          {...register("phone", {
-            onChange: (e) => {
-              e.target.value = phoneMask(e.target.value);
-            },
-          })}
         />
 
         <FileInput
@@ -167,7 +160,7 @@ export function Registration() {
           }
         />
 
-        <Button type="submit" variant="primary" isLoading={isSubmitting}>
+        <Button type="submit" variant="primary" isLoading={isSubmitting} style={{ width: '100%' }}>
           Enviar
         </Button>
       </S.FormCard>
