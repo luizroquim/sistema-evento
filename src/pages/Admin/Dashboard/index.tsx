@@ -196,11 +196,11 @@ export function AdminDashboard() {
           </S.HeaderTitles>
 
           <S.ButtonGroup>
-            <Button variant="secondary" onClick={handleGoToEvaluators}>
+            <Button variant="primary" onClick={handleGoToEvaluators}>
               <Users size={16} />
               <span>Gerenciar Avaliadores</span>
             </Button>
-            <Button variant="ghost" onClick={handleLogout}>
+            <Button variant="secondary" onClick={handleLogout}>
               <LogOut size={16} />
               <span>Sair do Sistema</span>
             </Button>
