@@ -1,9 +1,8 @@
 import { forwardRef, ButtonHTMLAttributes } from 'react';
 import * as S from './styles';
 
-
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost';
-
+// Adicionamos 'status-pending' e 'status-revision'
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'status-pending' | 'status-revision';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean;
@@ -15,7 +14,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <S.StyledButton 
         ref={ref}          
-        disabled={isLoading} 
+        disabled={isLoading || rest.disabled} 
         $variant={variant} 
         {...rest}
       >

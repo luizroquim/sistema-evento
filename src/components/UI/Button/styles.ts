@@ -1,71 +1,59 @@
-import styled, { css } from "styled-components";
-import { ButtonVariant } from "./index";
+import styled, { css } from 'styled-components';
 
 interface StyledButtonProps {
-  $variant: ButtonVariant;
+  $variant: string;
 }
 
-const variantStyles = {
-  primary: css`
-    background-color: ${(props) => props.theme.colors.foreground};
-    color: ${(props) => props.theme.colors.surface};
-    &:hover:not(:disabled) {
-      background-color: ${(props) => props.theme.colors.borderFocus};
-    }
-  `,
-
-  secondary: css`
-    background-color: ${(props) => props.theme.colors.surface};
-    color: ${(props) => props.theme.colors.foreground};
-    border: 1px solid ${(props) => props.theme.colors.border};
-
-    &:hover:not(:disabled) {
-      border-color: ${(props) => props.theme.colors.borderFocus};
-      background-color: ${(props) => props.theme.colors.background};
-    }
-  `,
-
-  ghost: css`
-    background-color: transparent;
-    color: ${(props) => props.theme.colors.foreground};
-
-    &:hover:not(:disabled) {
-      background-color: rgba(22, 53, 31, 0.08);
-    }
-  `,
-};
-
 export const StyledButton = styled.button<StyledButtonProps>`
+  border-radius: ${({ theme }) => theme.borderRadius.button}; /* Usa os 8px (0.5rem) do tema */
+  padding: 0.5rem 1rem;
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: ${({ theme }) => theme.fontWeights.medium};
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  
+  /* TRAVA DE SIMETRIA (TAMANHO IGUAL) */
+  width: 180px; 
+  
+  /* ALINHAMENTO DO TEXTO NA ESQUERDA E ÍCONE NA DIREITA */
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between; /* <-- MUDANÇA AQUI: Joga o texto pra esquerda e o ícone pra direita */
   gap: 0.5rem;
-
-  width: 100%;
-  min-height: 2.75rem;
-  padding: 0 1.25rem;
-
-  font-size: 0.875rem;
-  font-weight: 600;
-  border-radius: ${(props) => props.theme.borderRadius.input};
-  border: 1px solid transparent;
-  cursor: pointer;
-  transition: all 150ms ease;
-
   
-  ${(props) => variantStyles[props.$variant]}
+  /* CORES VINDAS DIRETO DO SEU THEME.TS */
+  background-color: ${({ theme }) => theme.colors.surface};
+  border: 1px solid ${({ theme }) => theme.colors.action.secondary}; /* Usa a cor de borda neutra */
+  color: ${({ theme }) => theme.colors.foreground}; /* Usa o seu Verde Floresta para o texto/ícone */
 
-  &:focus-visible {
-    outline: 2px solid ${(props) => props.theme.colors.borderFocus};
-    outline-offset: 2px;
+  /* Garante que o ícone do Lucide mantenha a proporção e não esmague */
+  svg {
+    flex-shrink: 0;
   }
 
+  /* ESTADOS (HOVER E DISABLED) */
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.02); /* Um detalhe sutil por cima do Bege de fundo */
+    border-color: ${({ theme }) => theme.colors.borderFocus}; /* Destaca usando seu verde escuro */
+  }
 
   &:disabled {
+    opacity: 0.5;
     cursor: not-allowed;
-    opacity: 0.65;
-    background-color: ${(props) => props.theme.colors.placeholder};
-    color: ${(props) => props.theme.colors.surface};
-    border-color: transparent;
   }
+
+  /* Se você precisar usar as outras variantes (primary, ghost) no futuro, elas já herdam o tamanho */
+  ${({ theme, $variant }) => {
+    if ($variant === 'ghost') {
+      return css`
+        background-color: transparent;
+        color: ${theme.colors.error};
+        border-color: transparent;
+        &:hover {
+          background-color: rgba(239, 68, 68, 0.05);
+          border-color: transparent;
+        }
+      `;
+    }
+  }}
 `;
