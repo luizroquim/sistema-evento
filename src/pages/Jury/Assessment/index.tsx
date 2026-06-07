@@ -10,7 +10,8 @@ const MOCK_CRITERIA_FROM_DB = [
   {
     id: "crit-1",
     title: "Relevância Cultural",
-    description: "Avalie o impacto social, originalidade e a contribuição cultural.",
+    description:
+      "Avalie o impacto social, originalidade e a contribuição cultural.",
     weight: 1,
   },
   {
@@ -58,7 +59,7 @@ export function JuryAssessment() {
   const handleScoreChange = useCallback(
     (criterionId: string, value: string) => {
       setScores((prev) => ({ ...prev, [criterionId]: value }));
-      
+
       const key = `scores.${criterionId}`;
       if (errors[key]) {
         setErrors((prev) => ({ ...prev, [key]: "" }));
@@ -71,8 +72,11 @@ export function JuryAssessment() {
     e.preventDefault();
 
     try {
-      await assessmentSchema.validate({ scores, comments }, { abortEarly: false });
-      
+      await assessmentSchema.validate(
+        { scores, comments },
+        { abortEarly: false },
+      );
+
       setErrors({});
       alert("Avaliação enviada com sucesso!");
       navigate("/jury/dashboard");
@@ -130,27 +134,37 @@ export function JuryAssessment() {
 
             <S.Card>
               <S.SectionTitle>Avaliação Técnica</S.SectionTitle>
+                
+
               {MOCK_CRITERIA_FROM_DB.map((criterion) => (
                 <S.CriterionRow key={criterion.id}>
                   <S.CriterionInfo>
                     <S.CriterionName>{criterion.title}</S.CriterionName>
-                    <S.CriterionDesc>{criterion.description}</S.CriterionDesc>
+                    <S.CriterionDesc>{criterion.description} <strong>(Nota: 1 a 10)</strong></S.CriterionDesc>
                   </S.CriterionInfo>
                   <div style={{ width: "100px" }}>
                     <S.ScoreInput
                       type="number"
                       min="1"
                       max="10"
-                      step="0.1"
+                      step="0.1" // Permitir notas decimais (ex: 8.5)
                       placeholder="0.0"
                       value={scores[criterion.id] || ""}
                       onChange={(e) =>
                         handleScoreChange(criterion.id, e.target.value)
                       }
+                      onBlur={(e) => {
+                        // Validação extra simples ao sair do campo para não deixar passar valores errados
+                        const val = parseFloat(e.target.value);
+                        if (val > 10) handleScoreChange(criterion.id, "10");
+                        if (val < 1 && e.target.value !== "")
+                          handleScoreChange(criterion.id, "1");
+                      }}
                     />
                     <ErrorMessage message={errors[`scores.${criterion.id}`]} />
                   </div>
                 </S.CriterionRow>
+                
               ))}
 
               <S.FinalScoreBox $active={finalScoreResult.isComplete}>
