@@ -1,18 +1,22 @@
-// src/pages/Jury/Assessment/schema.ts
 import * as Yup from "yup";
 
+// Importe seus critérios reais aqui
+const MOCK_CRITERIA_FROM_DB = [
+  { id: "crit-1" },
+  { id: "crit-2" },
+];
+
+const scoreSchema = MOCK_CRITERIA_FROM_DB.reduce((acc, criterion) => {
+  acc[criterion.id] = Yup.number()
+    .typeError("A nota deve ser um número")
+    .required("A nota é obrigatória")
+    .min(1, "Mínimo 1")
+    .max(10, "Máximo 10");
+  return acc;
+}, {} as Record<string, any>);
+
 export const assessmentSchema = Yup.object().shape({
-  scores: Yup.object().test(
-    "preenchidos",
-    "Preencha todas as notas de 1 a 10",
-    (value: any) => {
-      // Valida se todos os critérios do MOCK_CRITERIA_FROM_DB estão com notas entre 1 e 10
-      return (
-        value &&
-        Object.keys(value).length >= 2 &&
-        Object.values(value).every((v) => Number(v) >= 1 && Number(v) <= 10)
-      );
-    },
-  ),
+  scores: Yup.object().shape(scoreSchema),
+  // Aqui tornamos o campo opcional novamente
   comments: Yup.string().optional(),
 });

@@ -10,8 +10,7 @@ const MOCK_CRITERIA_FROM_DB = [
   {
     id: "crit-1",
     title: "Relevância Cultural",
-    description:
-      "Avalie o impacto social, originalidade e a contribuição cultural.",
+    description: "Avalie o impacto social, originalidade e a contribuição cultural.",
     weight: 1,
   },
   {
@@ -22,7 +21,6 @@ const MOCK_CRITERIA_FROM_DB = [
   },
 ];
 
-// Componente auxiliar para exibir o erro
 const ErrorMessage = ({ message }: { message?: string }) =>
   message ? (
     <span
@@ -43,7 +41,7 @@ export function JuryAssessment() {
 
   const [scores, setScores] = useState<Record<string, string>>({});
   const [comments, setComments] = useState("");
-  const [errors, setErrors] = useState<Record<string, string>>({}); // Estado para erros
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const projectData = {
     protocol: "REQ-001",
@@ -60,7 +58,7 @@ export function JuryAssessment() {
   const handleScoreChange = useCallback(
     (criterionId: string, value: string) => {
       setScores((prev) => ({ ...prev, [criterionId]: value }));
-      // Limpa o erro do campo quando o usuário digita
+      
       const key = `scores.${criterionId}`;
       if (errors[key]) {
         setErrors((prev) => ({ ...prev, [key]: "" }));
@@ -73,48 +71,19 @@ export function JuryAssessment() {
     e.preventDefault();
 
     try {
-      await assessmentSchema.validate(
-        { scores, comments },
-        { abortEarly: false },
-      );
+      await assessmentSchema.validate({ scores, comments }, { abortEarly: false });
+      
       setErrors({});
       alert("Avaliação enviada com sucesso!");
       navigate("/jury/dashboard");
     } catch (err: any) {
-      const validationErrors: Record<string, string> = {};
-
       if (err.name === "ValidationError") {
+        const validationErrors: Record<string, string> = {};
         err.inner.forEach((error: any) => {
-          // Mapeia o erro para o caminho correspondente (ex: 'scores' ou 'comments')
           validationErrors[error.path] = error.message;
         });
+        setErrors(validationErrors);
       }
-
-      // Garantir que cada critério esteja preenchido e tenha valor entre 1 e 10
-      MOCK_CRITERIA_FROM_DB.forEach((criterion) => {
-        const val = scores[criterion.id];
-        const key = `scores.${criterion.id}`;
-
-        if (val === undefined || val === null || String(val).trim() === "") {
-          if (!validationErrors[key])
-            validationErrors[key] = "A nota é obrigatória";
-          return;
-        }
-
-        const num = Number(val);
-        if (Number.isNaN(num) || num < 1 || num > 10) {
-          if (!validationErrors[key])
-            validationErrors[key] = "A nota deve ser entre 1 e 10";
-        }
-      });
-
-      // Garantir parecer
-      if (!comments || comments.trim().length === 0) {
-        if (!validationErrors.comments)
-          validationErrors.comments = "O parecer é obrigatório";
-      }
-
-      setErrors(validationErrors);
     }
   };
 
@@ -194,7 +163,7 @@ export function JuryAssessment() {
               </S.FinalScoreBox>
 
               <S.InfoGroup>
-                <S.Label>Parecer / Justificativa (Obrigatório)</S.Label>
+                <S.Label>Parecer / Justificativa</S.Label>
                 <S.TextArea
                   placeholder="Escreva sua análise detalhada aqui..."
                   value={comments}
