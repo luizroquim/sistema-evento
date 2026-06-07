@@ -1,4 +1,8 @@
+import { useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { FileDown } from "lucide-react";
+import { Accordion } from "../../../components/UI/Accordion";
+import { ConflictDetails, Review } from "../../../@types/database";
 import {
   Container,
   Content,
@@ -14,14 +18,19 @@ import {
   Value,
   AlertBox,
   ReturnButton,
-  ReviewCard,
   AverageBox,
   FileLinkButton,
+  ReviewHeader,
+  ReviewMeta,
+  ScoreBadge,
+  CriterionList,
+  CriterionItem,
+  CommentText,
 } from "./styles";
-import { FileDown } from "lucide-react";
 
-// Mock do Candidato que está em Conflito
-const mockConflictDetails = {
+// Certifique-se de que o mockConflictDetails esteja disponível ou importado
+// O tipo ConflictDetails garante a consistência deste objeto
+const mockConflictDetails: ConflictDetails = {
   id: "123e4567-e89b-12d3-a456-426614174003",
   name: "Beatriz Souza",
   protocol: "REQ-003",
@@ -53,17 +62,25 @@ const mockConflictDetails = {
 
 export function AdminEvaluation() {
   const navigate = useNavigate();
-  const data = mockConflictDetails;
+  const data: ConflictDetails = mockConflictDetails;
 
-  const handleBack = () => navigate("/admin/dashboard");
-
-  const handleReturnToJury = () => {
-    // 🚧 Futuramente: UPDATE no Supabase mudando o status para 'pendente' novamente
-    alert(
-      "Trabalho devolvido! Os jurados receberão um aviso para revisarem as notas em consenso.",
+  const averageScore = useMemo(() => {
+    const total = data.reviews.reduce(
+      (acc: number, r: Review) => acc + Number(r.nota),
+      0,
     );
+    return (total / (data.reviews.length || 1)).toFixed(2);
+  }, [data.reviews]);
+
+  const handleBack = useCallback(
+    () => navigate("/admin/dashboard"),
+    [navigate],
+  );
+
+  const handleReturnToJury = useCallback(() => {
+    alert("Trabalho devolvido para a banca.");
     navigate("/admin/dashboard");
-  };
+  }, [navigate]);
 
   return (
     <Container>
@@ -73,9 +90,9 @@ export function AdminEvaluation() {
           <BackButton onClick={handleBack}>Voltar ao Dashboard</BackButton>
         </Header>
 
-        {/* ALERTA DE CONFLITO E BOTÃO DE AÇÃO DO ADMIN */}
         {data.status === "conflito" && (
           <AlertBox>
+            <span>Clique no botão e devolva para a banca analisar novamente.</span>
             <ReturnButton onClick={handleReturnToJury}>
               Devolver para a Banca
             </ReturnButton>
@@ -83,7 +100,6 @@ export function AdminEvaluation() {
         )}
 
         <GridContainer>
-          {/* COLUNA 1: DADOS DO PROJETO */}
           <Card>
             <CardTitle>Informações do Candidato</CardTitle>
             <InfoGrid>
@@ -99,11 +115,13 @@ export function AdminEvaluation() {
               </InfoGroup>
               <InfoGroup>
                 <Label>Título do Trabalho</Label>
-                <Value style={{ fontWeight: 700 }}>{data.title}</Value>
+                <Value>
+                  <strong>{data.title}</strong>
+                </Value>
               </InfoGroup>
               <InfoGroup>
                 <Label>Resumo da Proposta</Label>
-                <Value style={{ color: "#374151" }}>{data.summary}</Value>
+                <Value>{data.summary}</Value>
               </InfoGroup>
               <InfoGroup>
                 <Label>Documento</Label>
@@ -113,81 +131,52 @@ export function AdminEvaluation() {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <FileDown size={16} />
-                    <span>Visualizar PDF do Projeto</span>
+                    <FileDown size={16} /> <span>Visualizar PDF</span>
                   </FileLinkButton>
                 </Value>
               </InfoGroup>
             </InfoGrid>
           </Card>
 
-          {/* COLUNA 2: PARECERES DA BANCA */}
           <Card>
             <CardTitle>Pareceres Emitidos</CardTitle>
-
-            {/* Média geral dos jurados */}
             <AverageBox>
               <span>Média geral das avaliações</span>
-              <span>
-                {(
-                  data.reviews.reduce((acc, r) => acc + Number(r.nota), 0) /
-                  (data.reviews.length || 1)
-                ).toFixed(2)}
-              </span>
+              <strong>{averageScore}</strong>
             </AverageBox>
 
-            {data.reviews.map((review, index) => (
-              <ReviewCard key={index}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginBottom: "0.5rem",
-                  }}
-                >
-                  <div>
-                    <strong>{review.jurado}</strong>
-                    <div style={{ fontSize: "0.82rem", color: "#6b7280" }}>
-                      {review.submittedAt
-                        ? new Date(review.submittedAt).toLocaleString()
-                        : ""}
+            {data.reviews.map((review: Review, index: number) => (
+              <Accordion
+                key={index}
+                title={
+                  <ReviewHeader>
+                    <div>
+                      <strong>{review.jurado}</strong>
+                      <ReviewMeta>
+                        {review.submittedAt
+                          ? new Date(review.submittedAt).toLocaleString()
+                          : ""}
+                      </ReviewMeta>
                     </div>
-                  </div>
-                  <div style={{ textAlign: "right" }}>
-                    <div style={{ fontWeight: "bold", fontSize: "1.1rem" }}>
-                      Nota: {review.nota.toFixed(1)}
+                    {/* Adicionamos um container com largura mínima para alinhar as notas */}
+                    <div style={{ textAlign: "right", minWidth: "80px" }}>
+                      <ScoreBadge>Nota: {review.nota.toFixed(1)}</ScoreBadge>
                     </div>
-                  </div>
-                </div>
-                {/* Notas por critério, se disponíveis */}
+                  </ReviewHeader>
+                }
+              >
                 {review.scores && (
-                  <div style={{ marginTop: "0.5rem", marginBottom: "0.5rem" }}>
+                  <CriterionList>
                     {Object.entries(review.scores).map(([crit, val]) => (
-                      <div
-                        key={crit}
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          fontSize: "0.85rem",
-                          color: "#374151",
-                        }}
-                      >
+                      <CriterionItem key={crit}>
                         <span>{crit}</span>
                         <strong>{Number(val).toFixed(1)}</strong>
-                      </div>
+                      </CriterionItem>
                     ))}
-                  </div>
+                  </CriterionList>
                 )}
-                <p
-                  style={{
-                    fontSize: "0.85rem",
-                    marginTop: "0.5rem",
-                    color: "#4b5563",
-                  }}
-                >
-                  "{review.comentario}"
-                </p>
-              </ReviewCard>
+                <CommentText>"{review.comentario}"</CommentText>
+              </Accordion>
             ))}
           </Card>
         </GridContainer>

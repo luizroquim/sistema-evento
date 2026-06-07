@@ -9,3 +9,23 @@ export interface Registration {
   protocol_number: string;
   file_path?: string;
 }
+
+export interface Review {
+  jurado: string;
+  nota: number;
+  recomendacao: string;
+  comentario: string;
+  submittedAt: string;
+  scores: Record<string, number>;
+}
+
+export interface ConflictDetails {
+  id: string;
+  name: string;
+  protocol: string;
+  status: string;
+  title: string;
+  summary: string;
+  documentUrl: string;
+  reviews: Review[];
+}

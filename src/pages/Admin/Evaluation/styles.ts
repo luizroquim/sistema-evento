@@ -17,7 +17,7 @@ export const Content = styled.div`
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 0.8rem;
 `;
 
 export const Header = styled.div`
@@ -82,7 +82,7 @@ export const Card = styled.div`
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 0.25rem;
 `;
 
 export const CardTitle = styled.h3`
@@ -103,10 +103,11 @@ export const InfoGrid = styled.div`
 export const InfoGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.1rem;
+  gap: 0.2rem;
 `;
 
 export const Label = styled.span`
+  padding:0.1rem;
   font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -119,7 +120,7 @@ export const Value = styled.p`
   line-height: 1.3;
 `;
 
-/* ESTILOS ESPECÍFICOS DESTA TELA */
+/* ESTILOS DE AVALIAÇÃO */
 
 export const AlertBox = styled.div`
   background-color: #fffbeb;
@@ -158,9 +159,44 @@ export const ReturnButton = styled.button`
 export const ReviewCard = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 8px;
-  padding: 1rem;
-  margin-top: 1rem;
   background-color: ${({ theme }) => theme.colors.surface};
+  margin-top: 0.5rem; /* Diminuído de 1rem para 0.5rem */
+`;
+
+export const ReviewHeader = styled.div`
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  width: 100%;
+  padding-right:8px;
+`;
+
+export const ReviewMeta = styled.div`
+  font-size: 0.82rem;
+  color: #6b7280;
+`;
+
+export const ScoreBadge = styled.div`
+  font-weight: bold;
+  font-size: 1.1rem;
+`;
+
+export const CriterionList = styled.div`
+  margin: 0.5rem 0;
+`;
+
+export const CriterionItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #374151;
+`;
+
+export const CommentText = styled.p`
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  color: #4b5563;
+  font-style: italic;
 `;
 
 export const AverageBox = styled.div`
@@ -171,7 +207,8 @@ export const AverageBox = styled.div`
   border-radius: 8px;
   background-color: ${({ theme }) => theme.colors.surface};
   border: 1px solid ${({ theme }) => theme.colors.border};
-  margin: 0.5rem 0 1rem 0;
+  /* Diminuí a margem inferior para o card dos professores ficar mais perto */
+  margin: 0.5rem 0 0.5rem 0; 
   font-weight: 700;
   color: ${({ theme }) => theme.colors.foreground};
 `;
@@ -197,4 +234,24 @@ export const FileLinkButton = styled.a`
     background-color: ${({ theme }) => theme.colors.hover};
     border-color: ${({ theme }) => theme.colors.borderFocus};
   }
+`;
+
+// Adicione ao seu styles.ts
+export const AccordionHeader = styled.button`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+`;
+
+export const AccordionContent = styled.div<{ $isOpen: boolean }>`
+  display: ${({ $isOpen }) => ($isOpen ? "block" : "none")};
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
 `;
