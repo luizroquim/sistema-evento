@@ -19,7 +19,9 @@ interface Candidate {
   id: string;
   name: string;
   protocol: string;
-  status: "pendente" | "avaliado" | "revisao";
+  projectTitle: string;
+  submissionDate: string;
+  status: "pendente" | "avaliado" | "revisao" | "conflito";
   averageGrade: number | null;
 }
 
@@ -28,6 +30,8 @@ const INITIAL_CANDIDATES: Candidate[] = [
     id: "1",
     name: "Ana Carolina Silva",
     protocol: "REQ-001",
+    projectTitle: "A memória das cidades pequenas",
+    submissionDate: "28 mai 2026",
     status: "pendente",
     averageGrade: null,
   },
@@ -35,6 +39,8 @@ const INITIAL_CANDIDATES: Candidate[] = [
     id: "2",
     name: "Marcos Vinicius Costa",
     protocol: "REQ-002",
+    projectTitle: "Impacto das APIs em Sistemas Legados",
+    submissionDate: "29 mai 2026",
     status: "avaliado",
     averageGrade: 8.75,
   },
@@ -42,6 +48,8 @@ const INITIAL_CANDIDATES: Candidate[] = [
     id: "3",
     name: "Beatriz Souza",
     protocol: "REQ-003",
+    projectTitle: "Versos sobre o silêncio",
+    submissionDate: "30 mai 2026",
     status: "revisao",
     averageGrade: 6.5,
   },
@@ -49,6 +57,8 @@ const INITIAL_CANDIDATES: Candidate[] = [
     id: "4",
     name: "Helena Martins",
     protocol: "REQ-004",
+    projectTitle: "Modernização de Interfaces em React",
+    submissionDate: "01 jun 2026",
     status: "revisao",
     averageGrade: 7.0,
   },
@@ -56,6 +66,8 @@ const INITIAL_CANDIDATES: Candidate[] = [
     id: "5",
     name: "Lucas Pereira",
     protocol: "REQ-005",
+    projectTitle: "Otimização de Bancos de Dados no Varejo",
+    submissionDate: "02 jun 2026",
     status: "avaliado",
     averageGrade: 9.2,
   },
@@ -154,16 +166,13 @@ export function AdminDashboard() {
     id: candidate.id,
     protocol: candidate.protocol,
     name: candidate.name,
-    projectTitle: "",
-    date:
-      candidate.averageGrade !== null
-        ? candidate.averageGrade.toFixed(2)
-        : "- ",
+    projectTitle: candidate.projectTitle,
+    date: candidate.submissionDate,
+    averageGrade: candidate.averageGrade !== null ? candidate.averageGrade.toFixed(2) : "--",
     myVoteStatus: candidate.status,
-    actionLabel: "Ver avaliação",
+    isAdmin: true,
   }));
 
-  // Cálculos dinâmicos para os cards do topo
   const totalTrabalhos = candidates.length;
   const totalPendentes = candidates.filter(
     (c) => c.status === "pendente",
@@ -229,10 +238,11 @@ export function AdminDashboard() {
           onSearch={handleSearch}
           onFilterStatus={handleFilterStatus}
           onSort={handleSort}
+          isAdmin={true}
         />
 
         <Table
-          columns={["Protocolo", "Candidato", "Média Final", "Status", "Ações"]}
+          columns={["Protocolo", "Candidato", "Enviado", "Média Final", "Status", "Ações"]}
           data={mappedData}
           onAction={handleAction}
         />

@@ -70,8 +70,8 @@ export const Th = styled.th`
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
 
   @media (min-width: 769px) {
-    &:nth-child(4),
-    &:last-child {
+    /* Centraliza Média Final, Status e Ações automaticamente */
+    &:nth-child(n+4) {
       text-align: center;
     }
   }
@@ -199,5 +199,11 @@ export const ActionGroup = styled.div`
       width: 100%;
       justify-content: center;
     }
+  }
+`;
+
+export const TdCenter = styled(Td)`
+  @media (min-width: 769px) {
+    text-align: center;
   }
 `;

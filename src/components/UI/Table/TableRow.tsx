@@ -25,74 +25,80 @@ export const TableRow = React.memo(({ data, onAction, onView }: TableRowProps) =
   const isAvaliado = data.myVoteStatus === 'avaliado';
   const isConflito = data.myVoteStatus === 'conflito';
 
-  const isAdmin = data.projectTitle && data.projectTitle.includes('Média');
+  const isAdmin = data.isAdmin === true;
 
   return (
     <tr>
       <S.Td><strong>{data.protocol}</strong></S.Td>
+      
       <S.Td>
         <S.CandidateContainer>
           <S.CandidateName>{data.name}</S.CandidateName>
-          <S.ProjectTitle>{data.projectTitle}</S.ProjectTitle>
+          {data.projectTitle && <S.ProjectTitle>{data.projectTitle}</S.ProjectTitle>}
         </S.CandidateContainer>
       </S.Td>
-      <S.Td>{data.date}</S.Td>
       
-      <S.TdStatus>
+      <S.Td>{data.date || '--'}</S.Td>
+      
+      {isAdmin && (
+        <S.TdCenter><strong>{data.averageGrade}</strong></S.TdCenter>
+      )}
+
+      <S.TdCenter>
         <S.StatusBadge $status={data.myVoteStatus}>
           {isPendente && <><Clock size={14} /> {isAdmin ? 'EM ABERTO' : 'AGUARDANDO NOTA'}</>}
-          {isRevisao && <><RefreshCw size={14} /> REVISÃO SOLICITADA</>}
+          {isRevisao && <><RefreshCw size={14} /> {isAdmin ? 'EM REVISÃO' : 'REVISÃO SOLICITADA'}</>}
           {isAvaliado && <><CheckCircle2 size={14} /> {isAdmin ? 'CONCLUÍDO' : 'PARECER ENVIADO'}</>}
           {isConflito && <><ShieldAlert size={14} /> CONFLITO NA BANCA</>}
         </S.StatusBadge>
-      </S.TdStatus>
+      </S.TdCenter>
       
       <S.TdAction>
         <S.ActionGroup>
-          <Button variant={isAvaliado ? "secondary" : "primary"} onClick={() => onAction(data.id)}>
-            {isPendente && (
-              <>
-                <span>Avaliar agora</span>
-                <ClipboardCheck size={16} />
-              </>
-            )}
-            
-            {isRevisao && (
-              <>
-                <span>Corrigir avaliação</span>
-                <RotateCcw size={16} />
-              </>
-            )}
-            
-            {isAvaliado && (
-              <>
-                {isAdmin ? (
+          {isAdmin ? (
+            <Button variant="secondary" onClick={() => onAction(data.id)}>
+              <span>Ver Detalhes</span>
+              <Eye size={16} />
+            </Button>
+          ) : (
+            <>
+              <Button variant={isAvaliado ? "secondary" : "primary"} onClick={() => onAction(data.id)}>
+                {isPendente && (
                   <>
-                    <span>Ver Detalhes</span>
-                    <Eye size={16} />
+                    <span>Avaliar agora</span>
+                    <ClipboardCheck size={16} />
                   </>
-                ) : (
+                )}
+                
+                {isRevisao && (
+                  <>
+                    <span>Corrigir avaliação</span>
+                    <RotateCcw size={16} />
+                  </>
+                )}
+                
+                {isAvaliado && (
                   <>
                     <span>Editar avaliação</span>
                     <Pencil size={16} />
                   </>
                 )}
-              </>
-            )}
-            
-            {isConflito && (
-              <>
-                <span>Resolver Conflito</span>
-                <Scale size={16} />
-              </>
-            )}
-          </Button>
+                
+                {isConflito && (
+                  <>
+                    <span>Resolver Conflito</span>
+                    <Scale size={16} />
+                  </>
+                )}
+              </Button>
 
-          {onView && (
-            <Button variant="ghost" onClick={() => onView(data.id)}>
-              <span>Ver avaliação</span>
-              <Eye size={16} />
-            </Button>
+              {onView && (
+                <Button variant="ghost" onClick={() => onView(data.id)}>
+                  <span>Ver avaliação</span>
+                  <Eye size={16} />
+                </Button>
+              )}
+            </>
           )}
         </S.ActionGroup>
       </S.TdAction>
