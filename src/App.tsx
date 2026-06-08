@@ -1,7 +1,7 @@
 import { ThemeProvider } from "styled-components";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { theme } from "./styles/theme";
-import { GlobalStyle } from './styles/globalStyles'; // Arquivo renomeado para .ts
+import { GlobalStyle } from './styles/globalStyles';
 
 // Importando as Páginas (Públicas e Admin)
 import { Registration } from "./pages/Registration";
@@ -11,15 +11,15 @@ import { AdminEvaluation } from "./pages/Admin/Evaluation";
 import { ForgotPassword } from "./pages/Admin/ForgotPassword";
 import { ResetPassword } from "./pages/Admin/ResetPassword";
 import { Evaluators } from "./pages/Admin/Evaluators";
+import { CriteriaManagement } from "./pages/Admin/CriteriaManagement";
 
 // Importando as Páginas da Banca (Jury)
 import { JuryDashboard } from "./pages/Jury/Dashboard";
 import { JuryAssessment } from "./pages/Jury/Assessment";
 
-function App() {
+export function App() {
   return (
     <ThemeProvider theme={theme}>
-      {/* O COMPONENTE PRECISA SER RENDERIZADO AQUI PARA APLICAR O RESET GLOBAL */}
       <GlobalStyle /> 
       
       <BrowserRouter>
@@ -30,10 +30,11 @@ function App() {
           {/* MUNDO 1: O Gestor (Admin) */}
           <Route path="/admin" element={<Login />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/avaliar/:id" element={<AdminEvaluation />} />
+          <Route path="/admin/evaluation/:id" element={<AdminEvaluation />} />
           <Route path="/admin/recuperar-senha" element={<ForgotPassword />} />
           <Route path="/admin/nova-senha" element={<ResetPassword />} />
           <Route path="/admin/avaliadores" element={<Evaluators />} />
+          <Route path="/admin/criteria" element={<CriteriaManagement />} />
 
           {/* MUNDO 2: A Banca Examinadora (Jury) */}
           <Route path="/jury/dashboard" element={<JuryDashboard />} />
@@ -43,5 +44,3 @@ function App() {
     </ThemeProvider>
   );
 }
-
-export default App;

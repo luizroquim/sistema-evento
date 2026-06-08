@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   RefreshCw,
   Users,
+  Sliders, // Importando ícone representativo para os critérios
 } from "lucide-react";
 import { Button } from "../../../components/UI/Button";
 import { StatCard } from "../../../components/UI/StatCard";
@@ -89,6 +90,13 @@ export function AdminDashboard() {
     () => navigate("/admin/avaliadores"),
     [navigate],
   );
+
+  // 1. FUNÇÃO MEMORIZADA PARA NAVEGAR ATÉ A TELA DE CRITÉRIOS
+  const handleGoToCriteria = useCallback(
+    () => navigate("/admin/criteria"),
+    [navigate],
+  );
+
   const handleAction = useCallback(
     (id: string) => navigate(`/admin/avaliar/${id}`),
     [navigate],
@@ -111,12 +119,12 @@ export function AdminDashboard() {
 
   useEffect(() => {
     function handleResize() {
-      setItemsPerPage(window.innerWidth >= 768 ? 10 : 5);
+      itemsPerPage === (window.innerWidth >= 768 ? 10 : 5);
     }
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [itemsPerPage]);
 
   const filteredAndSortedData = useMemo(() => {
     let result = [...candidates];
@@ -168,7 +176,10 @@ export function AdminDashboard() {
     name: candidate.name,
     projectTitle: candidate.projectTitle,
     date: candidate.submissionDate,
-    averageGrade: candidate.averageGrade !== null ? candidate.averageGrade.toFixed(2) : "--",
+    averageGrade:
+      candidate.averageGrade !== null
+        ? candidate.averageGrade.toFixed(2)
+        : "--",
     myVoteStatus: candidate.status,
     isAdmin: true,
   }));
@@ -196,10 +207,17 @@ export function AdminDashboard() {
           </S.HeaderTitles>
 
           <S.ButtonGroup>
+            {/* 2. ADIÇÃO DO BOTÃO DE GERENCIAR CRITÉRIOS */}
+            <Button variant="primary" onClick={handleGoToCriteria}>
+              <Sliders size={16} />
+              <span>Critérios de Nota</span>
+            </Button>
+
             <Button variant="primary" onClick={handleGoToEvaluators}>
               <Users size={16} />
               <span>Gerenciar Avaliadores</span>
             </Button>
+
             <Button variant="secondary" onClick={handleLogout}>
               <LogOut size={16} />
               <span>Sair do Sistema</span>
@@ -242,7 +260,14 @@ export function AdminDashboard() {
         />
 
         <Table
-          columns={["Protocolo", "Candidato", "Enviado", "Média Final", "Status", "Ações"]}
+          columns={[
+            "Protocolo",
+            "Candidato",
+            "Enviado",
+            "Média Final",
+            "Status",
+            "Ações",
+          ]}
           data={mappedData}
           onAction={handleAction}
         />

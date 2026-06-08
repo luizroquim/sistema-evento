@@ -92,7 +92,9 @@ export function AdminEvaluation() {
 
         {data.status === "conflito" && (
           <AlertBox>
-            <span>Clique no botão e devolva para a banca analisar novamente.</span>
+            <span>
+              Clique no botão e devolva para a banca avaliar novamente.
+            </span>
             <ReturnButton onClick={handleReturnToJury}>
               Devolver para a Banca
             </ReturnButton>

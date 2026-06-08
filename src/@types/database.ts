@@ -29,3 +29,10 @@ export interface ConflictDetails {
   documentUrl: string;
   reviews: Review[];
 }
+
+export interface Criterion {
+  id: string;
+  title: string;
+  description: string;
+  createdAt?: string;
+}
