@@ -34,30 +34,6 @@ export const Header = styled.div`
   }
 `;
 
-export const BackButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0 1rem;
-  height: 40px;
-  background-color: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.input};
-  color: ${({ theme }) => theme.colors.placeholder};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  font-weight: ${({ theme }) => theme.fontWeights.medium};
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  white-space: nowrap;
-
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.hover};
-    border-color: ${({ theme }) => theme.colors.borderFocus};
-    color: ${({ theme }) => theme.colors.foreground};
-  }
-`;
-
 export const HeaderTitles = styled.div`
   display: flex;
   flex-direction: column;
@@ -76,13 +52,6 @@ export const Title = styled.h1`
   font-weight: ${({ theme }) => theme.fontWeights.bold};
   color: ${({ theme }) => theme.colors.foreground};
   margin-top: 0.2rem;
-`;
-
-export const FormContainer = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  width: 100%;
 `;
 
 export const Card = styled.section`
@@ -130,7 +99,8 @@ export const FileLinkButton = styled.a`
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 0.75rem;
-  background-color: rgba(0, 0, 0, 0.02);
+  /* Trocado rgba pelo surfaceSoft da nossa paleta */
+  background-color: ${({ theme }) => theme.colors.surfaceSoft};
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.borderRadius.input};
   color: ${({ theme }) => theme.colors.foreground};
@@ -142,8 +112,8 @@ export const FileLinkButton = styled.a`
   width: fit-content;
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.hover};
-    border-color: ${({ theme }) => theme.colors.borderFocus};
+    background-color: ${({ theme }) => theme.colors.surfaceMuted};
+    border-color: ${({ theme }) => theme.colors.primary};
   }
 `;
 
@@ -154,8 +124,9 @@ export const CriterionRow = styled.div`
   justify-content: space-between;
   gap: 1rem;
   padding: 1rem;
-  background-color: rgba(0, 0, 0, 0.01);
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  /* Fundo sutil usando as variáveis do site em vez de preto transparente */
+  background-color: ${({ theme }) => theme.colors.surfaceSoft};
+  border: 1px solid ${({ theme }) => theme.colors.borderSoft};
   border-radius: ${({ theme }) => theme.borderRadius.input};
 `;
 
@@ -173,7 +144,7 @@ export const CriterionName = styled.span`
 
 export const CriterionDesc = styled.span`
   font-size: ${({ theme }) => theme.fontSizes.xs};
-  color: ${({ theme }) => theme.colors.placeholder};
+  color: ${({ theme }) => theme.colors.mutedText};
   line-height: 1.4;
 `;
 
@@ -195,7 +166,8 @@ export const ScoreInput = styled.input`
   }
 
   &::placeholder {
-    color: #a1a1aa;
+    /* Trocado o hex fixo pela variável temática */
+    color: ${({ theme }) => theme.colors.mutedText};
     font-weight: 400;
   }
 `;
@@ -217,6 +189,10 @@ export const TextArea = styled.textarea`
     border-color: ${({ theme }) => theme.colors.borderFocus};
     outline: none;
   }
+
+  &::placeholder {
+    color: ${({ theme }) => theme.colors.mutedText};
+  }
 `;
 
 export const ActionArea = styled.div`
@@ -232,7 +208,8 @@ export const FinalScoreBox = styled.div<{ $active: boolean }>`
   justify-content: space-between;
   padding: 1rem 1.25rem;
   margin: 1rem 0;
-  background-color: ${({ theme, $active }) => $active ? theme.colors.successLight : 'rgba(0, 0, 0, 0.02)'};
+  /* Quando inativo, usa o fundo Muted que criamos */
+  background-color: ${({ theme, $active }) => $active ? theme.colors.successLight : theme.colors.surfaceMuted};
   border: 1px solid ${({ theme, $active }) => $active ? theme.colors.success : theme.colors.border};
   border-radius: ${({ theme }) => theme.borderRadius.input};
   transition: all 0.3s ease;
@@ -240,14 +217,14 @@ export const FinalScoreBox = styled.div<{ $active: boolean }>`
   .label {
     font-size: ${({ theme }) => theme.fontSizes.sm};
     font-weight: ${({ theme }) => theme.fontWeights.semibold};
-    color: ${({ theme, $active }) => $active ? theme.colors.foreground : theme.colors.placeholder};
+    color: ${({ theme, $active }) => $active ? theme.colors.foreground : theme.colors.mutedText};
     text-transform: uppercase;
   }
 
   .value {
     font-size: ${({ theme }) => theme.fontSizes.xl};
     font-weight: ${({ theme }) => theme.fontWeights.bold};
-    color: ${({ theme, $active }) => $active ? theme.colors.foreground : theme.colors.placeholder};
+    color: ${({ theme, $active }) => $active ? theme.colors.foreground : theme.colors.mutedText};
   }
 `;
 
@@ -258,7 +235,6 @@ export const MainGrid = styled.div`
   align-items: start;
 
   @media (min-width: 1024px) {
-    /* 1fr para dados do candidato, 1.2fr para o formulário de notas */
     grid-template-columns: 1fr 1.2fr; 
   }
 `;

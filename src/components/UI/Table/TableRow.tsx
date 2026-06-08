@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { 
   Clock, 
   RefreshCw, 
@@ -24,8 +24,17 @@ export const TableRow = React.memo(({ data, onAction, onView }: TableRowProps) =
   const isRevisao = data.myVoteStatus === 'revisao';
   const isAvaliado = data.myVoteStatus === 'avaliado';
   const isConflito = data.myVoteStatus === 'conflito';
-
   const isAdmin = data.isAdmin === true;
+
+  // 1. Isolamos a lógica para descobrir qual botão o jurado deve ver.
+  // Isso limpa totalmente a poluição visual dentro do JSX lá embaixo!
+  const juryActionConfig = useMemo(() => {
+    if (isPendente) return { text: 'Avaliar agora', icon: <ClipboardCheck size={16} />, variant: 'secondary' as const };
+    if (isRevisao) return { text: 'Corrigir avaliação', icon: <RotateCcw size={16} />, variant: 'secondary' as const };
+    if (isAvaliado) return { text: 'Editar avaliação', icon: <Pencil size={16} />, variant: 'secondary' as const };
+    if (isConflito) return { text: 'Resolver Conflito', icon: <Scale size={16} />, variant: 'secondary' as const };
+    return null;
+  }, [isPendente, isRevisao, isAvaliado, isConflito]);
 
   return (
     <tr>
@@ -56,46 +65,38 @@ export const TableRow = React.memo(({ data, onAction, onView }: TableRowProps) =
       <S.TdAction>
         <S.ActionGroup>
           {isAdmin ? (
-            <Button variant="secondary" onClick={() => onAction(data.id)}>
-              <span>Ver Detalhes</span>
-              <Eye size={16} />
+            // Botão do Admin usando as novas props
+            <Button 
+              variant="secondary" 
+              icon={<Eye size={16} />} 
+              fullWidth 
+              onClick={() => onAction(data.id)}
+            >
+              Ver Detalhes
             </Button>
           ) : (
             <>
-              <Button variant={isAvaliado ? "secondary" : "primary"} onClick={() => onAction(data.id)}>
-                {isPendente && (
-                  <>
-                    <span>Avaliar agora</span>
-                    <ClipboardCheck size={16} />
-                  </>
-                )}
-                
-                {isRevisao && (
-                  <>
-                    <span>Corrigir avaliação</span>
-                    <RotateCcw size={16} />
-                  </>
-                )}
-                
-                {isAvaliado && (
-                  <>
-                    <span>Editar avaliação</span>
-                    <Pencil size={16} />
-                  </>
-                )}
-                
-                {isConflito && (
-                  <>
-                    <span>Resolver Conflito</span>
-                    <Scale size={16} />
-                  </>
-                )}
-              </Button>
+              {/* Botão dinâmico do Jurado (Super limpo!) */}
+              {juryActionConfig && (
+                <Button 
+                  variant={juryActionConfig.variant} 
+                  icon={juryActionConfig.icon} 
+                  fullWidth 
+                  onClick={() => onAction(data.id)}
+                >
+                  {juryActionConfig.text}
+                </Button>
+              )}
 
+              {/* Botão extra de visualização */}
               {onView && (
-                <Button variant="ghost" onClick={() => onView(data.id)}>
-                  <span>Ver avaliação</span>
-                  <Eye size={16} />
+                <Button 
+                  variant="ghost" 
+                  icon={<Eye size={16} />} 
+                  fullWidth 
+                  onClick={() => onView(data.id)}
+                >
+                  Ver avaliação
                 </Button>
               )}
             </>

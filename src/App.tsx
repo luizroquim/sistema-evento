@@ -13,6 +13,7 @@ import { ResetPassword } from "./pages/Admin/ResetPassword";
 import { Evaluators } from "./pages/Admin/Evaluators";
 import { CriteriaManagement } from "./pages/Admin/CriteriaManagement";
 
+
 // Importando as Páginas da Banca (Jury)
 import { JuryDashboard } from "./pages/Jury/Dashboard";
 import { JuryAssessment } from "./pages/Jury/Assessment";
