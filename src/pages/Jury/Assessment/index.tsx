@@ -99,13 +99,15 @@ export function JuryAssessment() {
             <S.ProtocolBadge>PROPOSTA {projectData.protocol}</S.ProtocolBadge>
             <S.Title>Avaliação de Projeto</S.Title>
           </S.HeaderTitles>
-          <S.BackButton
-            type="button"
+          
+          {/* BOTÃO DE VOLTAR ATUALIZADO */}
+          <Button
+            variant="secondary"
+            icon={<ArrowLeft size={16} />}
             onClick={() => navigate("/jury/dashboard")}
           >
-            <ArrowLeft size={16} />
-            <span>Voltar para o painel</span>
-          </S.BackButton>
+            Voltar para o painel
+          </Button>
         </S.Header>
 
         <form onSubmit={handleFormSubmit} noValidate>
@@ -134,27 +136,27 @@ export function JuryAssessment() {
 
             <S.Card>
               <S.SectionTitle>Avaliação Técnica</S.SectionTitle>
-                
 
               {MOCK_CRITERIA_FROM_DB.map((criterion) => (
                 <S.CriterionRow key={criterion.id}>
                   <S.CriterionInfo>
                     <S.CriterionName>{criterion.title}</S.CriterionName>
-                    <S.CriterionDesc>{criterion.description} <strong>(Nota: 1 a 10)</strong></S.CriterionDesc>
+                    <S.CriterionDesc>
+                      {criterion.description} <strong>(Nota: 1 a 10)</strong>
+                    </S.CriterionDesc>
                   </S.CriterionInfo>
                   <div style={{ width: "100px" }}>
                     <S.ScoreInput
                       type="number"
                       min="1"
                       max="10"
-                      step="0.1" // Permitir notas decimais (ex: 8.5)
+                      step="0.1"
                       placeholder="0.0"
                       value={scores[criterion.id] || ""}
                       onChange={(e) =>
                         handleScoreChange(criterion.id, e.target.value)
                       }
                       onBlur={(e) => {
-                        // Validação extra simples ao sair do campo para não deixar passar valores errados
                         const val = parseFloat(e.target.value);
                         if (val > 10) handleScoreChange(criterion.id, "10");
                         if (val < 1 && e.target.value !== "")
@@ -164,7 +166,6 @@ export function JuryAssessment() {
                     <ErrorMessage message={errors[`scores.${criterion.id}`]} />
                   </div>
                 </S.CriterionRow>
-                
               ))}
 
               <S.FinalScoreBox $active={finalScoreResult.isComplete}>
@@ -191,12 +192,13 @@ export function JuryAssessment() {
               </S.InfoGroup>
 
               <S.ActionArea>
+                {/* BOTÃO DE SUBMIT ATUALIZADO */}
                 <Button
                   type="submit"
-                  style={{ padding: "0 2rem", height: "44px" }}
+                  variant="primary"
+                  icon={<CheckSquare size={18} />}
                 >
-                  <CheckSquare size={18} />
-                  <span>Finalizar Avaliação</span>
+                  Finalizar Avaliação
                 </Button>
               </S.ActionArea>
             </S.Card>

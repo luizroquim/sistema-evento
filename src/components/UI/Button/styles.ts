@@ -1,59 +1,113 @@
-import styled, { css } from 'styled-components';
+import styled, { css } from "styled-components";
+import { ButtonVariant } from "./index";
 
+// 1. O TypeScript agora sabe que $fullWidth existe e é um booleano
 interface StyledButtonProps {
-  $variant: string;
+  $variant?: ButtonVariant;
+  $fullWidth?: boolean;
 }
 
 export const StyledButton = styled.button<StyledButtonProps>`
-  border-radius: ${({ theme }) => theme.borderRadius.button}; /* Usa os 8px (0.5rem) do tema */
-  padding: 0.5rem 1rem;
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  font-weight: ${({ theme }) => theme.fontWeights.medium};
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  
-  /* TRAVA DE SIMETRIA (TAMANHO IGUAL) */
-  width: 180px; 
-  
-  /* ALINHAMENTO DO TEXTO NA ESQUERDA E ÍCONE NA DIREITA */
   display: inline-flex;
-  align-items: center;
-  justify-content: space-between; /* <-- MUDANÇA AQUI: Joga o texto pra esquerda e o ícone pra direita */
-  gap: 0.5rem;
-  
-  /* CORES VINDAS DIRETO DO SEU THEME.TS */
-  background-color: ${({ theme }) => theme.colors.surface};
-  border: 1px solid ${({ theme }) => theme.colors.action.secondary}; /* Usa a cor de borda neutra */
-  color: ${({ theme }) => theme.colors.foreground}; /* Usa o seu Verde Floresta para o texto/ícone */
 
-  /* Garante que o ícone do Lucide mantenha a proporção e não esmague */
-  svg {
-    flex-shrink: 0;
+  /* 2. Aplica 100% de largura se a prop for verdadeira, ou mantém automático */
+  width: ${({ $fullWidth }) => ($fullWidth ? "100%" : "auto")};
+
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem; /* O espaçamento entre o ícone e o texto */
+
+  border-radius: ${({ theme }) => theme.borderRadius.button};
+  padding: 0 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+
+  transition:
+    background-color 0.2s ease-in-out,
+    border-color 0.2s ease-in-out,
+    color 0.2s ease-in-out;
+
+  border: 1px solid transparent;
+  cursor: pointer;
+  outline: none;
+
+  /* Centralização perfeita para o container do ícone */
+  .button-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  /* ESTADOS (HOVER E DISABLED) */
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.02); /* Um detalhe sutil por cima do Bege de fundo */
-    border-color: ${({ theme }) => theme.colors.borderFocus}; /* Destaca usando seu verde escuro */
+  svg {
+    stroke-width: 2.5px;
   }
 
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.6;
     cursor: not-allowed;
   }
 
-  /* Se você precisar usar as outras variantes (primary, ghost) no futuro, elas já herdam o tamanho */
-  ${({ theme, $variant }) => {
-    if ($variant === 'ghost') {
-      return css`
-        background-color: transparent;
-        color: ${theme.colors.error};
-        border-color: transparent;
-        &:hover {
-          background-color: rgba(239, 68, 68, 0.05);
-          border-color: transparent;
-        }
-      `;
+  ${({ $variant, theme }) => {
+    switch ($variant) {
+      case "secondary":
+        return css`
+          border: 1px solid ${theme.colors.border};
+          background: ${theme.colors.surface};
+          color: ${theme.colors.foreground};
+          box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+          &:hover:not(:disabled) {
+            border: 1px solid ${theme.colors.primary};
+
+            color: ${theme.colors.primary};
+            transform: scale(1.03);
+
+            transition:
+              background-color 0.2s ease-in-out,
+              border-color 0.2s ease-in-out,
+              color 0.2s ease-in-out,
+              transform 0.2s ease-in-out;
+          }
+
+          &:active:not(:disabled) {
+            transform: scale(0.98);
+          }
+        `;
+
+      case "ghost":
+        return css`
+          background: transparent;
+          color: ${theme.colors.foreground};
+
+          &:hover:not(:disabled) {
+            background: ${theme.colors.hover};
+            color: ${theme.colors.primary};
+          }
+        `;
+
+      case "primary":
+      default:
+        return css`
+          background: ${theme.colors.primary};
+          color: ${theme.colors.white};
+          box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+          &:hover:not(:disabled) {
+            background: ${theme.colors.primaryDark};
+            transform: scale(1.03);
+
+            transition:
+              background-color 0.2s ease-in-out,
+              border-color 0.2s ease-in-out,
+              color 0.2s ease-in-out,
+              transform 0.2s ease-in-out;
+            
+              &:active:not(:disabled) {
+              transform: scale(0.98);
+            }
+          }
+        `;
     }
   }}
 `;

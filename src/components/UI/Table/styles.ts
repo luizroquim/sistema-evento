@@ -187,21 +187,43 @@ export const StatusBadge = styled.span<{ $status: string }>`
 
 export const ActionGroup = styled.div`
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  justify-content: center;
+  flex-direction: column;
+  gap: 0.35rem; /* Diminuí o espaço entre eles para a coluna ficar mais compacta */
+  width: 100%;
+  min-width: 140px; 
+  align-items: stretch;
+
+  /* MÁGICA: Reduz os botões apenas dentro deste grupo no Desktop */
+  button {
+    min-height: 2rem !important; /* Cai de 44px para 32px */
+    height: 2rem;
+    padding: 0 0.75rem;
+    font-size: 0.75rem; /* Letra um pouco menor (12px) */
+  }
+
+  /* Reduz os ícones proporcionalmente para acompanhar o texto menor */
+  button svg {
+    width: 14px;
+    height: 14px;
+  }
 
   @media (max-width: 768px) {
-    flex-direction: column;
     width: 100%;
-
+    
     button {
       width: 100%;
-      justify-content: center;
+      /* No celular, volta a ser grande (44px) para ser fácil de clicar com o dedo */
+      min-height: 2.75rem !important; 
+      height: 2.75rem;
+      font-size: 0.875rem; 
+    }
+    
+    button svg {
+      width: 16px;
+      height: 16px;
     }
   }
 `;
-
 export const TdCenter = styled(Td)`
   @media (min-width: 769px) {
     text-align: center;

@@ -98,7 +98,7 @@ export function AdminDashboard() {
   );
 
   const handleAction = useCallback(
-    (id: string) => navigate(`/admin/avaliar/${id}`),
+    (id: string) => navigate(`/admin/evaluation/${id}`), // <-- Altere de /avaliar/ para /evaluation/
     [navigate],
   );
 
